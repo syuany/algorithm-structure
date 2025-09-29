@@ -19,19 +19,22 @@ private:
         Node(const T &value, Node *n = nullptr) : val(value), next(n) {}
     };
 
+    // 不带头节点（哨兵）
     Node *head;
     Node *tail;
     size_t length;
 
 public:
+    // 迭代器相关类型定义
     using value_type = T;
     using reference = T &;
     using const_reference = const T &;
     using pointer = T &;
-    using const_pointer = constT *;
+    using const_pointer = const T *;
     using size_type = size_t;
     using defference_type = std::ptrdiff_t;
 
+    // 正向迭代器
     class iterator{
     public:
         using iterator_category = std::forward_iterator_tag;
@@ -71,7 +74,8 @@ public:
     private:
         const Node *current;
     }
-
+    
+    // 构造函数
     LinkedList();
     // LinkedList(const T &value);
     // LinkedList(const T &value, const LinkedList &other);
@@ -79,14 +83,18 @@ public:
     LinkedList(const LinkedList &other);        // 拷贝构造
     LinkedList(LinkedList &&other) noexcept;    // 移动构造
 
+    // 析构函数
     ~LinkedList();
-    
+
+    // 赋值运算符
     LinkedList &operator=(const LinkedList &other);     //拷贝赋值
     LinkedList &operator=(LinkedList &&other) noexcept; //移动赋值
 
+    // 容量
     size_type size() const noexcept;
     bool empty() const noexcept;
 
+    // 访问
     reference front();
     reference back();
     reference at(size_t index);
@@ -96,6 +104,7 @@ public:
     const_reference at(size_t index) const;   
     const_reference operator[](size_t index) const;
 
+    // 修改
     void push_front(const T &value);
     void push_back(const T &value);
     void pop_front();
@@ -105,11 +114,12 @@ public:
     void clear() noexcept;
 
 
-    // 暂不考虑过长链表
+    // 查找
     iterator find(const T &value) ;
     const_iterator find(const T &value) const;
     bool contains(const T &value) const;
     
+    // 迭代器
     // TODO
     iterator begin() noexcept;
     iterator end() noexcept;
@@ -118,6 +128,7 @@ public:
     const_iterator cbegin() const noexcept;
     const_iterator cend() const noexcept;
 
+    // 特殊操作
     void reverse() noexcept;
     void remove_value(const T &value);
 };
