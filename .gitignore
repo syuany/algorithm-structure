@@ -33,5 +33,7 @@
 
 # my file
 tips.md
+t/
+*log*
 
 .vscode/
