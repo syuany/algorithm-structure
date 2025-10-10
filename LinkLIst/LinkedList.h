@@ -1,16 +1,17 @@
 /*
-    Singly-Linked List 
-*/ 
+    Singly-Linked List
+*/
 
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
 
-#include<initializer_list>
-#include<string>
-#include<iostream>
+#include <initializer_list>
+#include <string>
+#include <iostream>
 
 template <typename T>
-class LinkedList{
+class LinkedList
+{
 private:
     struct Node
     {
@@ -29,13 +30,14 @@ public:
     using value_type = T;
     using reference = T &;
     using const_reference = const T &;
-    using pointer = T &;
+    using pointer = T *;
     using const_pointer = const T *;
     using size_type = size_t;
-    using defference_type = std::ptrdiff_t;
+    using difference_type = std::ptrdiff_t;
 
     // 正向迭代器
-    class iterator{
+    class iterator
+    {
     public:
         using iterator_category = std::forward_iterator_tag;
         using value_type = T;
@@ -55,7 +57,8 @@ public:
         Node *current;
     };
 
-    class const_iterator{
+    class const_iterator
+    {
     public:
         using iterator_category = std::forward_iterator_tag;
         using value_type = const T;
@@ -77,16 +80,16 @@ public:
 
     // 构造函数
     LinkedList();
-    LinkedList(std::initializer_list<T> init);  // 允许 ={1，2，3}
-    LinkedList(const LinkedList &other);        // 拷贝构造
-    LinkedList(LinkedList &&other) noexcept;    // 移动构造
+    LinkedList(std::initializer_list<T> init); // 允许 ={1，2，3}
+    LinkedList(const LinkedList &other);       // 拷贝构造
+    LinkedList(LinkedList &&other) noexcept;   // 移动构造
 
     // 析构函数
     ~LinkedList();
 
     // 赋值运算符
-    LinkedList &operator=(const LinkedList &other);     //拷贝赋值
-    LinkedList &operator=(LinkedList &&other) noexcept; //移动赋值
+    LinkedList &operator=(const LinkedList &other);     // 拷贝赋值
+    LinkedList &operator=(LinkedList &&other) noexcept; // 移动赋值
 
     // 容量
     size_type size() const noexcept;
@@ -98,8 +101,8 @@ public:
     reference at(size_t index);
     reference operator[](size_t index);
     const_reference front() const;
-    const_reference back() const;    
-    const_reference at(size_t index) const;   
+    const_reference back() const;
+    const_reference at(size_t index) const;
     const_reference operator[](size_t index) const;
 
     // 修改
@@ -112,10 +115,10 @@ public:
     void clear() noexcept;
 
     // 查找
-    iterator find(const T &value) ;
+    iterator find(const T &value);
     const_iterator find(const T &value) const;
     bool contains(const T &value) const;
-    
+
     // 迭代器
     iterator begin() noexcept;
     iterator end() noexcept;
@@ -128,7 +131,6 @@ public:
     void reverse() noexcept;
     void remove_value(const T &value);
 };
-
 
 #include "LinkedList.tpp"
 #endif
