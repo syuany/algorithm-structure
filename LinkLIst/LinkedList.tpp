@@ -406,16 +406,27 @@ const T &LinkedList<T>::at(size_t index) const
     return current->val;
 }
 
+// operator[] without bound checking
 template <typename T>
 T &LinkedList<T>::operator[](size_t index)
 {
-    return at(index);
+    Node *cur = head;
+    for (size_t i = 0; i < index; i++)
+    {
+        cur = cur->next;
+    }
+    return cur->val;
 }
 
 template <typename T>
 const T &LinkedList<T>::operator[](size_t index) const
 {
-    return at(index);
+    const Node *cur = head;
+    for (size_t i = 0; i < index; i++)
+    {
+        cur = cur->next;
+    }
+    return cur->val;
 }
 
 template <typename T>
