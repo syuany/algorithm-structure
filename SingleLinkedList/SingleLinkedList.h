@@ -10,14 +10,14 @@
 #include <iostream>
 
 template <typename T>
-class LinkedList
-{
+class SingleLinkedList {
 private:
-    struct Node
-    {
+    struct Node {
         T val;
         Node *next;
-        Node(const T &value, Node *n = nullptr) : val(value), next(n) {}
+        Node(const T &value, Node *n = nullptr) :
+            val(value), next(n) {
+        }
     };
 
     // 不带头节点（哨兵）
@@ -36,8 +36,7 @@ public:
     using difference_type = std::ptrdiff_t;
 
     // 正向迭代器
-    class iterator
-    {
+    class iterator {
     public:
         using iterator_category = std::forward_iterator_tag;
         using value_type = T;
@@ -45,7 +44,9 @@ public:
         using pointer = T *;
         using reference = T &;
 
-        iterator(Node *p = nullptr) : current(p) {}
+        iterator(Node *p = nullptr) :
+            current(p) {
+        }
         reference operator*() const;
         pointer operator->();
         iterator &operator++();
@@ -57,8 +58,7 @@ public:
         Node *current;
     };
 
-    class const_iterator
-    {
+    class const_iterator {
     public:
         using iterator_category = std::forward_iterator_tag;
         using value_type = const T;
@@ -66,7 +66,9 @@ public:
         using pointer = const T *;
         using reference = const T &;
 
-        const_iterator(const Node *p = nullptr) : current(p) {}
+        const_iterator(const Node *p = nullptr) :
+            current(p) {
+        }
         reference operator*() const;
         pointer operator->() const;
         const_iterator &operator++();
@@ -79,17 +81,17 @@ public:
     };
 
     // 构造函数
-    LinkedList();
-    LinkedList(std::initializer_list<T> init); // 允许 ={1，2，3}
-    LinkedList(const LinkedList &other);       // 拷贝构造
-    LinkedList(LinkedList &&other) noexcept;   // 移动构造
+    SingleLinkedList();
+    SingleLinkedList(std::initializer_list<T> init);     // 允许 ={1，2，3}
+    SingleLinkedList(const SingleLinkedList &other);     // 拷贝构造
+    SingleLinkedList(SingleLinkedList &&other) noexcept; // 移动构造
 
     // 析构函数
-    ~LinkedList();
+    ~SingleLinkedList();
 
     // 赋值运算符
-    LinkedList &operator=(const LinkedList &other);     // 拷贝赋值
-    LinkedList &operator=(LinkedList &&other) noexcept; // 移动赋值
+    SingleLinkedList &operator=(const SingleLinkedList &other);     // 拷贝赋值
+    SingleLinkedList &operator=(SingleLinkedList &&other) noexcept; // 移动赋值
 
     // 容量
     size_type size() const noexcept;
@@ -132,5 +134,5 @@ public:
     void remove_value(const T &value);
 };
 
-#include "LinkedList.tpp"
+#include "SingleLinkedList.tpp"
 #endif
