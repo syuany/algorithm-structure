@@ -3,29 +3,29 @@
 #include <stdexcept>
 
 template <typename T>
-SingleLinkedList<T>::SingleLinkedList() :
+mys::SingleLinkedList<T>::SingleLinkedList() :
     head(nullptr), tail(nullptr), length(0) {
 }
 
 template <typename T>
-T &SingleLinkedList<T>::iterator::operator*() const {
+T &mys::SingleLinkedList<T>::iterator::operator*() const {
     return current->val;
 }
 
 template <typename T>
-T *SingleLinkedList<T>::iterator::operator->() {
+T *mys::SingleLinkedList<T>::iterator::operator->() {
     return &(current->val);
 }
 
 template <typename T>
-SingleLinkedList<T>::iterator &SingleLinkedList<T>::iterator::operator++() {
+typename mys::SingleLinkedList<T>::iterator &mys::SingleLinkedList<T>::iterator::operator++() {
     if (current)
         current = current->next;
     return *this;
 }
 
 template <typename T>
-SingleLinkedList<T>::iterator SingleLinkedList<T>::iterator::operator++(int) {
+typename mys::SingleLinkedList<T>::iterator mys::SingleLinkedList<T>::iterator::operator++(int) {
     iterator temp = *this;
     if (current)
         current = current->next;
@@ -33,27 +33,27 @@ SingleLinkedList<T>::iterator SingleLinkedList<T>::iterator::operator++(int) {
 }
 
 template <typename T>
-bool SingleLinkedList<T>::iterator::operator==(const iterator &other) const {
+bool mys::SingleLinkedList<T>::iterator::operator==(const iterator &other) const {
     return current == other.current;
 }
 
 template <typename T>
-bool SingleLinkedList<T>::iterator::operator!=(const iterator &other) const {
+bool mys::SingleLinkedList<T>::iterator::operator!=(const iterator &other) const {
     return !(*this == other);
 }
 
 template <typename T>
-const T &SingleLinkedList<T>::const_iterator::operator*() const {
+const T &mys::SingleLinkedList<T>::const_iterator::operator*() const {
     return current->val;
 }
 
 template <typename T>
-const T *SingleLinkedList<T>::const_iterator::operator->() const {
+const T *mys::SingleLinkedList<T>::const_iterator::operator->() const {
     return &(current->val);
 }
 
 template <typename T>
-SingleLinkedList<T>::const_iterator &SingleLinkedList<T>::const_iterator::operator++() {
+typename mys::SingleLinkedList<T>::const_iterator &mys::SingleLinkedList<T>::const_iterator::operator++() {
     if (current) {
         current = current->next;
     }
@@ -61,7 +61,7 @@ SingleLinkedList<T>::const_iterator &SingleLinkedList<T>::const_iterator::operat
 }
 
 template <typename T>
-SingleLinkedList<T>::const_iterator SingleLinkedList<T>::const_iterator::operator++(int) {
+typename mys::SingleLinkedList<T>::const_iterator mys::SingleLinkedList<T>::const_iterator::operator++(int) {
     const_iterator temp = *this;
     if (current)
         current = current->next;
@@ -69,56 +69,57 @@ SingleLinkedList<T>::const_iterator SingleLinkedList<T>::const_iterator::operato
 }
 
 template <typename T>
-bool SingleLinkedList<T>::const_iterator::operator==(const const_iterator &other) const {
+bool mys::SingleLinkedList<T>::const_iterator::operator==(const const_iterator &other) const {
     return current == other.current;
 }
+
 template <typename T>
-bool SingleLinkedList<T>::const_iterator::operator!=(const const_iterator &other) const {
+bool mys::SingleLinkedList<T>::const_iterator::operator!=(const const_iterator &other) const {
     return !(*this == other);
 }
 
 template <typename T>
-SingleLinkedList<T>::iterator SingleLinkedList<T>::begin() noexcept {
+typename mys::SingleLinkedList<T>::iterator mys::SingleLinkedList<T>::begin() noexcept {
     return iterator(head);
 }
 
 template <typename T>
-SingleLinkedList<T>::const_iterator SingleLinkedList<T>::begin() const noexcept {
+typename mys::SingleLinkedList<T>::const_iterator mys::SingleLinkedList<T>::begin() const noexcept {
     return const_iterator(head);
 }
 
 template <typename T>
-SingleLinkedList<T>::const_iterator SingleLinkedList<T>::cbegin() const noexcept {
+typename mys::SingleLinkedList<T>::const_iterator mys::SingleLinkedList<T>::cbegin() const noexcept {
     return const_iterator(head);
 }
 
 template <typename T>
-SingleLinkedList<T>::iterator SingleLinkedList<T>::end() noexcept {
+typename mys::SingleLinkedList<T>::iterator mys::SingleLinkedList<T>::end() noexcept {
     return iterator(nullptr);
 }
 
 template <typename T>
-SingleLinkedList<T>::const_iterator SingleLinkedList<T>::end() const noexcept {
+typename mys::SingleLinkedList<T>::const_iterator mys::SingleLinkedList<T>::end() const noexcept {
     return const_iterator(nullptr);
 }
 
 template <typename T>
-SingleLinkedList<T>::const_iterator SingleLinkedList<T>::cend() const noexcept {
+typename mys::SingleLinkedList<T>::const_iterator mys::SingleLinkedList<T>::cend() const noexcept {
     return const_iterator(nullptr);
 }
 
 template <typename T>
-size_t SingleLinkedList<T>::size() const noexcept {
+size_t mys::SingleLinkedList<T>::size() const noexcept {
     return length;
 }
 
 template <typename T>
-bool SingleLinkedList<T>::empty() const noexcept {
+bool mys::SingleLinkedList<T>::empty() const noexcept {
     return length == 0;
 }
 
 template <typename T>
-void SingleLinkedList<T>::push_back(const T &value) {
+void mys::SingleLinkedList<T>::push_back(const T &value) {
     if (length == 0) {
         head = new Node(value);
         tail = head;
@@ -132,7 +133,7 @@ void SingleLinkedList<T>::push_back(const T &value) {
 }
 
 template <typename T>
-void SingleLinkedList<T>::push_front(const T &value) {
+void mys::SingleLinkedList<T>::push_front(const T &value) {
     Node *p = new Node(value);
     if (!length)
         tail = p;
@@ -143,7 +144,7 @@ void SingleLinkedList<T>::push_front(const T &value) {
 
 // 插入后成为第index个节点
 template <typename T>
-SingleLinkedList<T>::iterator SingleLinkedList<T>::insert(size_t index, const T &value) {
+typename mys::SingleLinkedList<T>::iterator mys::SingleLinkedList<T>::insert(size_t index, const T &value) {
     if (index > size())
         throw std::out_of_range("Insert index out of range");
 
@@ -171,7 +172,7 @@ SingleLinkedList<T>::iterator SingleLinkedList<T>::insert(size_t index, const T 
 }
 
 template <typename T>
-void SingleLinkedList<T>::pop_front() {
+void mys::SingleLinkedList<T>::pop_front() {
     if (length == 0) {
         throw std::out_of_range("Pop front from empty list");
     }
@@ -188,7 +189,7 @@ void SingleLinkedList<T>::pop_front() {
 }
 
 template <typename T>
-void SingleLinkedList<T>::pop_back() {
+void mys::SingleLinkedList<T>::pop_back() {
     if (length == 0) {
         throw std::out_of_range("Pop back from empty list");
     }
@@ -209,7 +210,7 @@ void SingleLinkedList<T>::pop_back() {
 }
 
 template <typename T>
-SingleLinkedList<T>::iterator SingleLinkedList<T>::erase(size_t index) {
+typename mys::SingleLinkedList<T>::iterator mys::SingleLinkedList<T>::erase(size_t index) {
     if (index >= size())
         throw std::out_of_range("Erase index out of range");
 
@@ -240,7 +241,7 @@ SingleLinkedList<T>::iterator SingleLinkedList<T>::erase(size_t index) {
 }
 
 template <typename T>
-void SingleLinkedList<T>::clear() noexcept {
+void mys::SingleLinkedList<T>::clear() noexcept {
     while (length > 0) {
         Node *p = head;
         head = head->next;
@@ -251,7 +252,7 @@ void SingleLinkedList<T>::clear() noexcept {
 }
 
 template <typename T>
-SingleLinkedList<T>::SingleLinkedList(std::initializer_list<T> init) :
+mys::SingleLinkedList<T>::SingleLinkedList(std::initializer_list<T> init) :
     SingleLinkedList() {
     for (const auto &val : init) {
         push_back(val);
@@ -259,7 +260,7 @@ SingleLinkedList<T>::SingleLinkedList(std::initializer_list<T> init) :
 }
 
 template <typename T>
-SingleLinkedList<T>::SingleLinkedList(const SingleLinkedList &other) noexcept {
+mys::SingleLinkedList<T>::SingleLinkedList(const SingleLinkedList &other) noexcept {
     if (!other.length) {
         head = nullptr;
         tail = nullptr;
@@ -275,7 +276,7 @@ SingleLinkedList<T>::SingleLinkedList(const SingleLinkedList &other) noexcept {
 }
 
 template <typename T>
-SingleLinkedList<T>::SingleLinkedList(SingleLinkedList &&other) noexcept {
+mys::SingleLinkedList<T>::SingleLinkedList(SingleLinkedList &&other) noexcept {
     head = other.head;
     tail = other.tail;
     length = other.length;
@@ -285,12 +286,12 @@ SingleLinkedList<T>::SingleLinkedList(SingleLinkedList &&other) noexcept {
 }
 
 template <typename T>
-SingleLinkedList<T>::~SingleLinkedList() {
+mys::SingleLinkedList<T>::~SingleLinkedList() {
     clear();
 }
 
 template <typename T>
-T &SingleLinkedList<T>::front() {
+T &mys::SingleLinkedList<T>::front() {
     if (!length) {
         throw std::out_of_range("Head not exist");
     }
@@ -298,7 +299,7 @@ T &SingleLinkedList<T>::front() {
 }
 
 template <typename T>
-const T &SingleLinkedList<T>::front() const {
+const T &mys::SingleLinkedList<T>::front() const {
     if (!length) {
         throw std::out_of_range("Head not exist");
     }
@@ -306,7 +307,7 @@ const T &SingleLinkedList<T>::front() const {
 }
 
 template <typename T>
-T &SingleLinkedList<T>::back() {
+T &mys::SingleLinkedList<T>::back() {
     if (!length) {
         throw std::out_of_range("Tail not exist");
     }
@@ -314,7 +315,7 @@ T &SingleLinkedList<T>::back() {
 }
 
 template <typename T>
-const T &SingleLinkedList<T>::back() const {
+const T &mys::SingleLinkedList<T>::back() const {
     if (!length) {
         throw std::out_of_range("Tail not exist");
     }
@@ -322,7 +323,7 @@ const T &SingleLinkedList<T>::back() const {
 }
 
 template <typename T>
-T &SingleLinkedList<T>::at(size_t index) {
+T &mys::SingleLinkedList<T>::at(size_t index) {
     if (index >= length) {
         throw std::out_of_range("At index out of range");
     }
@@ -333,7 +334,7 @@ T &SingleLinkedList<T>::at(size_t index) {
 }
 
 template <typename T>
-const T &SingleLinkedList<T>::at(size_t index) const {
+const T &mys::SingleLinkedList<T>::at(size_t index) const {
     if (index >= length) {
         throw std::out_of_range("At index out of range");
     }
@@ -345,7 +346,7 @@ const T &SingleLinkedList<T>::at(size_t index) const {
 
 // operator[] without bound checking
 template <typename T>
-T &SingleLinkedList<T>::operator[](size_t index) {
+T &mys::SingleLinkedList<T>::operator[](size_t index) {
     Node *cur = head;
     for (size_t i = 0; i < index; i++) {
         cur = cur->next;
@@ -354,7 +355,7 @@ T &SingleLinkedList<T>::operator[](size_t index) {
 }
 
 template <typename T>
-const T &SingleLinkedList<T>::operator[](size_t index) const {
+const T &mys::SingleLinkedList<T>::operator[](size_t index) const {
     const Node *cur = head;
     for (size_t i = 0; i < index; i++) {
         cur = cur->next;
@@ -363,7 +364,7 @@ const T &SingleLinkedList<T>::operator[](size_t index) const {
 }
 
 template <typename T>
-SingleLinkedList<T> &SingleLinkedList<T>::operator=(const SingleLinkedList &other) {
+mys::SingleLinkedList<T> &mys::SingleLinkedList<T>::operator=(const SingleLinkedList &other) {
     if (this != &other) {
         SingleLinkedList temp(other);
         std::swap(head, temp.head);
@@ -374,7 +375,7 @@ SingleLinkedList<T> &SingleLinkedList<T>::operator=(const SingleLinkedList &othe
 }
 
 template <typename T>
-SingleLinkedList<T> &SingleLinkedList<T>::operator=(SingleLinkedList &&other) noexcept {
+mys::SingleLinkedList<T> &mys::SingleLinkedList<T>::operator=(SingleLinkedList &&other) noexcept {
     if (this != &other) {
         clear();
         head = other.head;
@@ -388,7 +389,7 @@ SingleLinkedList<T> &SingleLinkedList<T>::operator=(SingleLinkedList &&other) no
 }
 
 template <typename T>
-SingleLinkedList<T>::iterator SingleLinkedList<T>::find(const T &value) {
+typename mys::SingleLinkedList<T>::iterator mys::SingleLinkedList<T>::find(const T &value) {
     for (iterator it = begin(); it != end(); it++) {
         if (*it == value)
             return it;
@@ -397,7 +398,7 @@ SingleLinkedList<T>::iterator SingleLinkedList<T>::find(const T &value) {
 }
 
 template <typename T>
-SingleLinkedList<T>::const_iterator SingleLinkedList<T>::find(const T &value) const {
+typename mys::SingleLinkedList<T>::const_iterator mys::SingleLinkedList<T>::find(const T &value) const {
     for (const_iterator it = begin(); it != end(); it++) {
         if (*it == value)
             return it;
@@ -406,7 +407,7 @@ SingleLinkedList<T>::const_iterator SingleLinkedList<T>::find(const T &value) co
 }
 
 template <typename T>
-bool SingleLinkedList<T>::contains(const T &value) const {
+bool mys::SingleLinkedList<T>::contains(const T &value) const {
     for (const_iterator it = begin(); it != end(); it++) {
         if (*it == value)
             return true;
@@ -416,7 +417,7 @@ bool SingleLinkedList<T>::contains(const T &value) const {
 
 // 头插法 o(1)空间  递归（尾插法） o(n)空间
 template <typename T>
-void SingleLinkedList<T>::reverse() noexcept {
+void mys::SingleLinkedList<T>::reverse() noexcept {
     if (length <= 1)
         return;
     Node *pre = nullptr, *cur = head;
@@ -431,7 +432,7 @@ void SingleLinkedList<T>::reverse() noexcept {
 }
 
 template <typename T>
-void SingleLinkedList<T>::remove_value(const T &value) {
+void mys::SingleLinkedList<T>::remove_value(const T &value) {
     while (head != nullptr && head->val == value) {
         Node *toDelete = head;
         head = head->next;

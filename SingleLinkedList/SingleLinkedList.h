@@ -2,12 +2,14 @@
     Singly-Linked List
 */
 
-#ifndef LINKED_LIST_H
-#define LINKED_LIST_H
+#ifndef SINGLE_LINKED_LIST_H
+#define SINGLE_LINKED_LIST_H
 
 #include <initializer_list>
 #include <string>
 #include <iostream>
+
+namespace mys {
 
 template <typename T>
 class SingleLinkedList {
@@ -82,9 +84,9 @@ public:
 
     // 构造函数
     SingleLinkedList();
-    SingleLinkedList(std::initializer_list<T> init);     // 允许 ={1，2，3}
-    SingleLinkedList(const SingleLinkedList &other);     // 拷贝构造
-    SingleLinkedList(SingleLinkedList &&other) noexcept; // 移动构造
+    SingleLinkedList(std::initializer_list<T> init);          // 允许 ={1，2，3}
+    SingleLinkedList(const SingleLinkedList &other) noexcept; // 拷贝构造
+    SingleLinkedList(SingleLinkedList &&other) noexcept;      // 移动构造
 
     // 析构函数
     ~SingleLinkedList();
@@ -133,6 +135,8 @@ public:
     void reverse() noexcept;
     void remove_value(const T &value);
 };
+
+} // namespace mys
 
 #include "SingleLinkedList.tpp"
 #endif
