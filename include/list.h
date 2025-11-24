@@ -20,7 +20,7 @@ template <typename T>
 concept Listable = std::movable<T> && std::destructible<T>;
 
 template <Listable T>
-class DoubleLinkedList {
+class list {
 private:
     // 内部节点结构
     struct Node {
@@ -47,7 +47,7 @@ public:
     class ListIterator {
     private:
         Node *current_ = nullptr;
-        friend class DoubleLinkedList;
+        friend class list;
 
     public:
         // 必要的类型定义，使STL算法能识别该迭代器
@@ -77,11 +77,11 @@ public:
     // 2. 构造与析构 (生命周期管理)
     // ===========================================================
 
-    DoubleLinkedList(const DoubleLinkedList &other);
-    DoubleLinkedList(DoubleLinkedList &&other) noexcept;
-    DoubleLinkedList &operator=(const DoubleLinkedList &other);
-    DoubleLinkedList &operator=(DoubleLinkedList &&other) noexcept;
-    ~DoubleLinkedList();
+    list(const list &other);
+    list(list &&other) noexcept;
+    list &operator=(const list &other);
+    list &operator=(list &&other) noexcept;
+    ~list();
 
     // ===========================================================
     // 3. 元素访问
@@ -161,26 +161,26 @@ public:
     // ===========================================================
 
     // 自动生成 == 和 !=
-    bool operator==(const DoubleLinkedList &other) const;
+    bool operator==(const list &other) const;
 
     // C++20: 实现三路比较
     // 需要 T 也支持 <=>，否则需要退化为普通比较
-    std::strong_ordering operator<=>(const DoubleLinkedList &other) const;
+    std::strong_ordering operator<=>(const list &other) const;
 
     // ===========================================================
     // 8. 其他操作
     // ===========================================================
 
-    void swap(DoubleLinkedList &other) noexcept;
+    void swap(list &other) noexcept;
 };
 
 // 外部 swap 函数，用于 ADL (Argument Dependent Lookup)
 template <Listable T>
-void swap(DoubleLinkedList<T> &lhs, DoubleLinkedList<T> &rhs) noexcept {
+void swap(list<T> &lhs, list<T> &rhs) noexcept {
     lhs.swap(rhs);
 }
 
 } // namespace mys
 
-#include "DoubleLinkedList.tpp"
+#include "list.tpp"
 #endif

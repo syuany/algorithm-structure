@@ -12,7 +12,7 @@
 namespace mys {
 
 template <typename T>
-class SingleLinkedList {
+class forward_list {
 private:
     struct Node {
         T val;
@@ -83,17 +83,17 @@ public:
     };
 
     // 构造函数
-    SingleLinkedList();
-    SingleLinkedList(std::initializer_list<T> init);          // 允许 ={1，2，3}
-    SingleLinkedList(const SingleLinkedList &other) noexcept; // 拷贝构造
-    SingleLinkedList(SingleLinkedList &&other) noexcept;      // 移动构造
+    forward_list();
+    forward_list(std::initializer_list<T> init);      // 允许 ={1，2，3}
+    forward_list(const forward_list &other) noexcept; // 拷贝构造
+    forward_list(forward_list &&other) noexcept;      // 移动构造
 
     // 析构函数
-    ~SingleLinkedList();
+    ~forward_list();
 
     // 赋值运算符
-    SingleLinkedList &operator=(const SingleLinkedList &other);     // 拷贝赋值
-    SingleLinkedList &operator=(SingleLinkedList &&other) noexcept; // 移动赋值
+    forward_list &operator=(const forward_list &other);     // 拷贝赋值
+    forward_list &operator=(forward_list &&other) noexcept; // 移动赋值
 
     // 容量
     size_type size() const noexcept;
@@ -138,5 +138,5 @@ public:
 
 } // namespace mys
 
-#include "SingleLinkedList.tpp"
+#include "forward_list.tpp"
 #endif
