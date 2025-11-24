@@ -2,9 +2,6 @@
     Singly-Linked List
 */
 
-#ifndef SINGLE_LINKED_LIST_H
-#define SINGLE_LINKED_LIST_H
-
 #include <initializer_list>
 #include <string>
 #include <iostream>
@@ -139,4 +136,3 @@ public:
 } // namespace mys
 
 #include "forward_list.tpp"
-#endif

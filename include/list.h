@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef DOUBLE_LINKED_LIST_H
-#define DOUBLE_LINKED_LIST_H
-
 #include <cstddef>          // for size_t
 #include <initializer_list> // for std::initializer_list
 #include <compare>          // C++20: for operator <=>
@@ -183,4 +180,3 @@ void swap(list<T> &lhs, list<T> &rhs) noexcept {
 } // namespace mys
 
 #include "list.tpp"
-#endif

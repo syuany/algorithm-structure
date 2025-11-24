@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(MyStructure)
 
-# set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 # 设置C++标准
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -28,4 +26,3 @@ enable_testing()
 
 # 添加测试
 add_test(NAME ListTest COMMAND test_forward_list)
-# add_test(NAME BenchmarkTest COMMAND benchmark_test)
