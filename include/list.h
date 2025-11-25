@@ -5,40 +5,43 @@
 #include <compare>          // C++20: for operator <=>
 #include <concepts>         // C++20: for requires
 #include <iterator>         // for std::bidirectional_iterator_tag
-#include <memory>           // for std::allocator (可选，进阶挑战)
+#include <memory>           // for std::allocator (optional, advanced challenge)
 #include <utility>          // for std::move, std::forward
-// 需兼容 std::ranges
+// Need to be compatible with std::ranges
 
 namespace mys {
 
-// C++20: 定义一个 Concept，约束存入链表的类型必须是可移动且可析构的
-// 可以根据需要增加更多约束，比如 std::equality_comparable
+// C++20: Define a Concept to constrain that types stored in the list must be movable and destructible
+// More constraints can be added as needed, such as std::equality_comparable
 template <typename T>
 concept Listable = std::movable<T> && std::destructible<T>;
 
-template <Listable T>
+template <Listable T, typename Allocator = std::allocator<T>>
 class list {
 private:
-    // 内部节点结构
+    // Internal node structure
     struct Node {
-        T data;
+        T val;
         Node *prev = nullptr;
         Node *next = nullptr;
 
         // Perfect Forwarding
         template <typename... Args>
         Node(Args &&...args) :
-            data(std::forward<Args>(args)...) {
+            val(std::forward<Args>(args)...) {
         }
     };
 
+    using NodeAlloc = typename std::allocator_traits<Allocator>::template rebind_alloc<Node>;
+    [[no_unique_address]] NodeAlloc allocator_;
+
     Node *head = nullptr;
     Node *tail = nullptr;
-    std::size_t size_ = 0;
+    std::size_t length = 0;
 
 public:
     // ===========================================================
-    // 1. 迭代器实现 (挑战：符合 C++20 Iterator Concepts)
+    // 1. Iterator Implementation (Challenge: Compliant with C++20 Iterator Concepts)
     // ===========================================================
     template <bool IsConst>
     class ListIterator {
@@ -47,7 +50,7 @@ public:
         friend class list;
 
     public:
-        // 必要的类型定义，使STL算法能识别该迭代器
+        // Necessary type definitions so STL algorithms can recognize this iterator
         using iterator_category = std::bidirectional_iterator_tag;
         using difference_type = std::ptrdiff_t;
         using value_type = T;
@@ -71,9 +74,11 @@ public:
     using const_iterator = ListIterator<true>;
 
     // ===========================================================
-    // 2. 构造与析构 (生命周期管理)
+    // 2. Construction and Destruction (Lifecycle Management)
     // ===========================================================
 
+    list() = default;
+    list(std::initializer_list<T> init);
     list(const list &other);
     list(list &&other) noexcept;
     list &operator=(const list &other);
@@ -81,13 +86,13 @@ public:
     ~list();
 
     // ===========================================================
-    // 3. 元素访问
+    // 3. Element Access
     // ===========================================================
 
     // C++23: Deducing this
     template <typename Self>
     auto &&front(this Self &&self);
-    template <typename Sefl>
+    template <typename Self>
     auto &&back(this Self &&self);
 
     // [[nodiscard]] T &front();
@@ -96,14 +101,14 @@ public:
     // [[nodiscard]] const T &back() const;
 
     // ===========================================================
-    // 4. 容量查询
+    // 4. Capacity Query
     // ===========================================================
 
     [[nodiscard]] bool empty() const noexcept;
-    [[nodiscard]] std : size_t size() const noexcept;
+    [[nodiscard]] std::size_t size() const noexcept;
 
     // ===========================================================
-    // 5. 修改器
+    // 5. Modifiers
     // ===========================================================
 
     void clear() noexcept;
@@ -113,8 +118,8 @@ public:
     void push_front(const T &value);
     void push_front(T &&value);
 
-    // C++11: 原地构造 (Variadic Templates)
-    // 这里的 Args&&... 需要完美转发给 Node 的构造函数
+    // C++11: In-place construction (Variadic Templates)
+    // The Args&&... here need to be perfectly forwarded to Node's constructor
     template <typename... Args>
     void emplace_back(Args &&...args);
     template <typename... Args>
@@ -133,7 +138,7 @@ public:
     iterator erase(const_iterator first, const_iterator last);
 
     // ===========================================================
-    // 6. 迭代器接口
+    // 6. Iterator Interface
     // ===========================================================
 
     iterator begin() noexcept;
@@ -144,7 +149,7 @@ public:
     const_iterator end() const noexcept;
     const_iterator cend() const noexcept;
 
-    // 反向迭代器 (std::reverse_iterator 适配器)
+    // Reverse iterators (std::reverse_iterator adapter)
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -154,24 +159,28 @@ public:
     const_reverse_iterator crend() const noexcept;
 
     // ===========================================================
-    // 7. C++20 比较操作 (Spaceship Operator)
+    // 7. C++20 Comparison Operations (Spaceship Operator)
     // ===========================================================
 
-    // 自动生成 == 和 !=
+    // Auto-generated == and !=
     bool operator==(const list &other) const;
 
-    // C++20: 实现三路比较
-    // 需要 T 也支持 <=>，否则需要退化为普通比较
+    // C++20: Implement three-way comparison
+    // Requires T to also support <=>, otherwise needs to fall back to regular comparison
     std::strong_ordering operator<=>(const list &other) const;
 
     // ===========================================================
-    // 8. 其他操作
+    // 8. Other Operations
     // ===========================================================
 
     void swap(list &other) noexcept;
+
+    template <typename... Args>
+    Node *create_node(Args &&...args);
+    void destroy_node(Node *ptr);
 };
 
-// 外部 swap 函数，用于 ADL (Argument Dependent Lookup)
+// External swap function, for ADL (Argument Dependent Lookup)
 template <Listable T>
 void swap(list<T> &lhs, list<T> &rhs) noexcept {
     lhs.swap(rhs);
