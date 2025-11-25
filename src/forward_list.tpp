@@ -2,124 +2,166 @@
 #include <initializer_list>
 #include <stdexcept>
 
+namespace mys {
+
 template <typename T>
-mys::forward_list<T>::forward_list() :
-    head(nullptr), tail(nullptr), length(0) {
+forward_list<T>::forward_list(std::initializer_list<T> init) :
+    forward_list() {
+    for (const auto &val : init) {
+        push_back(val);
+    }
 }
 
 template <typename T>
-T &mys::forward_list<T>::iterator::operator*() const {
-    return current->val;
+forward_list<T>::forward_list(const forward_list &other) {
+    if (!other.length) {
+        head = nullptr;
+        tail = nullptr;
+        length = 0;
+        return;
+    }
+    head = new Node(other.head->val);
+    tail = head;
+    length = 1;
+    for (auto it = ++other.begin(); it != other.end(); it++) {
+        push_back(*it);
+    }
 }
 
 template <typename T>
-T *mys::forward_list<T>::iterator::operator->() {
-    return &(current->val);
+forward_list<T>::forward_list(forward_list &&other) noexcept {
+    head = other.head;
+    tail = other.tail;
+    length = other.length;
+    other.head = nullptr;
+    other.tail = nullptr;
+    other.length = 0;
 }
 
 template <typename T>
-typename mys::forward_list<T>::iterator &mys::forward_list<T>::iterator::operator++() {
-    if (current)
-        current = current->next;
-    return *this;
+forward_list<T>::~forward_list() {
+    clear();
 }
 
 template <typename T>
-typename mys::forward_list<T>::iterator mys::forward_list<T>::iterator::operator++(int) {
-    iterator temp = *this;
-    if (current)
-        current = current->next;
-    return temp;
-}
-
-template <typename T>
-bool mys::forward_list<T>::iterator::operator==(const iterator &other) const {
-    return current == other.current;
-}
-
-template <typename T>
-bool mys::forward_list<T>::iterator::operator!=(const iterator &other) const {
-    return !(*this == other);
-}
-
-template <typename T>
-const T &mys::forward_list<T>::const_iterator::operator*() const {
-    return current->val;
-}
-
-template <typename T>
-const T *mys::forward_list<T>::const_iterator::operator->() const {
-    return &(current->val);
-}
-
-template <typename T>
-typename mys::forward_list<T>::const_iterator &mys::forward_list<T>::const_iterator::operator++() {
-    if (current) {
-        current = current->next;
+forward_list<T> &forward_list<T>::operator=(const forward_list &other) {
+    if (this != &other) {
+        forward_list temp(other);
+        std::swap(head, temp.head);
+        std::swap(tail, temp.tail);
+        std::swap(length, temp.length);
     }
     return *this;
 }
 
 template <typename T>
-typename mys::forward_list<T>::const_iterator mys::forward_list<T>::const_iterator::operator++(int) {
-    const_iterator temp = *this;
-    if (current)
-        current = current->next;
-    return temp;
+forward_list<T> &forward_list<T>::operator=(forward_list &&other) noexcept {
+    if (this != &other) {
+        clear();
+        head = other.head;
+        tail = other.tail;
+        length = other.length;
+        other.head = nullptr;
+        other.tail = nullptr;
+        other.length = 0;
+    }
+    return *this;
 }
 
 template <typename T>
-bool mys::forward_list<T>::const_iterator::operator==(const const_iterator &other) const {
-    return current == other.current;
-}
-
-template <typename T>
-bool mys::forward_list<T>::const_iterator::operator!=(const const_iterator &other) const {
-    return !(*this == other);
-}
-
-template <typename T>
-typename mys::forward_list<T>::iterator mys::forward_list<T>::begin() noexcept {
-    return iterator(head);
-}
-
-template <typename T>
-typename mys::forward_list<T>::const_iterator mys::forward_list<T>::begin() const noexcept {
-    return const_iterator(head);
-}
-
-template <typename T>
-typename mys::forward_list<T>::const_iterator mys::forward_list<T>::cbegin() const noexcept {
-    return const_iterator(head);
-}
-
-template <typename T>
-typename mys::forward_list<T>::iterator mys::forward_list<T>::end() noexcept {
-    return iterator(nullptr);
-}
-
-template <typename T>
-typename mys::forward_list<T>::const_iterator mys::forward_list<T>::end() const noexcept {
-    return const_iterator(nullptr);
-}
-
-template <typename T>
-typename mys::forward_list<T>::const_iterator mys::forward_list<T>::cend() const noexcept {
-    return const_iterator(nullptr);
-}
-
-template <typename T>
-size_t mys::forward_list<T>::size() const noexcept {
+size_t forward_list<T>::size() const noexcept {
     return length;
 }
 
 template <typename T>
-bool mys::forward_list<T>::empty() const noexcept {
+bool forward_list<T>::empty() const noexcept {
     return length == 0;
 }
 
 template <typename T>
-void mys::forward_list<T>::push_back(const T &value) {
+T &forward_list<T>::front() {
+    if (!length) {
+        throw std::out_of_range("Head not exist");
+    }
+    return head->val;
+}
+
+template <typename T>
+const T &forward_list<T>::front() const {
+    if (!length) {
+        throw std::out_of_range("Head not exist");
+    }
+    return head->val;
+}
+
+template <typename T>
+T &forward_list<T>::back() {
+    if (!length) {
+        throw std::out_of_range("Tail not exist");
+    }
+    return tail->val;
+}
+
+template <typename T>
+const T &forward_list<T>::back() const {
+    if (!length) {
+        throw std::out_of_range("Tail not exist");
+    }
+    return tail->val;
+}
+
+template <typename T>
+T &forward_list<T>::at(size_t index) {
+    if (index >= length) {
+        throw std::out_of_range("At index out of range");
+    }
+    Node *current = head;
+    for (size_t i = 0; i < index; i++)
+        current = current->next;
+    return current->val;
+}
+
+template <typename T>
+const T &forward_list<T>::at(size_t index) const {
+    if (index >= length) {
+        throw std::out_of_range("At index out of range");
+    }
+    const Node *current = head;
+    for (size_t i = 0; i < index; i++)
+        current = current->next;
+    return current->val;
+}
+
+template <typename T>
+T &forward_list<T>::operator[](size_t index) {
+    Node *cur = head;
+    for (size_t i = 0; i < index; i++) {
+        cur = cur->next;
+    }
+    return cur->val;
+}
+
+template <typename T>
+const T &forward_list<T>::operator[](size_t index) const {
+    const Node *cur = head;
+    for (size_t i = 0; i < index; i++) {
+        cur = cur->next;
+    }
+    return cur->val;
+}
+
+template <typename T>
+void forward_list<T>::push_front(const T &value) {
+    Node *p = new Node(value);
+    if (!length)
+        tail = p;
+    p->next = head;
+    head = p;
+    length++;
+}
+
+template <typename T>
+void forward_list<T>::push_back(const T &value) {
     if (length == 0) {
         head = new Node(value);
         tail = head;
@@ -133,18 +175,45 @@ void mys::forward_list<T>::push_back(const T &value) {
 }
 
 template <typename T>
-void mys::forward_list<T>::push_front(const T &value) {
-    Node *p = new Node(value);
-    if (!length)
-        tail = p;
-    p->next = head;
-    head = p;
-    length++;
+void forward_list<T>::pop_front() {
+    if (length == 0) {
+        throw std::out_of_range("Pop front from empty list");
+    }
+    if (length == 1) {
+        delete head;
+        head = nullptr;
+        tail = nullptr;
+    } else {
+        Node *p = head;
+        head = head->next;
+        delete p;
+    }
+    length--;
 }
 
-// 插入后成为第index个节点
 template <typename T>
-typename mys::forward_list<T>::iterator mys::forward_list<T>::insert(size_t index, const T &value) {
+void forward_list<T>::pop_back() {
+    if (length == 0) {
+        throw std::out_of_range("Pop back from empty list");
+    }
+    if (length == 1) {
+        delete head;
+        head = nullptr;
+        tail = nullptr;
+    } else {
+        Node *pre = head;
+        for (size_t i = 0; i < length - 2; i++) {
+            pre = pre->next;
+        }
+        delete tail;
+        tail = pre;
+        tail->next = nullptr;
+    }
+    length--;
+}
+
+template <typename T>
+typename forward_list<T>::iterator forward_list<T>::insert(size_t index, const T &value) {
     if (index > size())
         throw std::out_of_range("Insert index out of range");
 
@@ -172,45 +241,7 @@ typename mys::forward_list<T>::iterator mys::forward_list<T>::insert(size_t inde
 }
 
 template <typename T>
-void mys::forward_list<T>::pop_front() {
-    if (length == 0) {
-        throw std::out_of_range("Pop front from empty list");
-    }
-    if (length == 1) {
-        delete head;
-        head = nullptr;
-        tail = nullptr;
-    } else {
-        Node *p = head;
-        head = head->next;
-        delete p;
-    }
-    length--;
-}
-
-template <typename T>
-void mys::forward_list<T>::pop_back() {
-    if (length == 0) {
-        throw std::out_of_range("Pop back from empty list");
-    }
-    if (length == 1) {
-        delete head;
-        head = nullptr;
-        tail = nullptr;
-    } else {
-        Node *pre = head;
-        for (size_t i = 0; i < length - 2; i++) {
-            pre = pre->next;
-        }
-        delete tail;
-        tail = pre;
-        tail->next = nullptr;
-    }
-    length--;
-}
-
-template <typename T>
-typename mys::forward_list<T>::iterator mys::forward_list<T>::erase(size_t index) {
+typename forward_list<T>::iterator forward_list<T>::erase(size_t index) {
     if (index >= size())
         throw std::out_of_range("Erase index out of range");
 
@@ -241,7 +272,7 @@ typename mys::forward_list<T>::iterator mys::forward_list<T>::erase(size_t index
 }
 
 template <typename T>
-void mys::forward_list<T>::clear() noexcept {
+void forward_list<T>::clear() noexcept {
     while (length > 0) {
         Node *p = head;
         head = head->next;
@@ -252,144 +283,7 @@ void mys::forward_list<T>::clear() noexcept {
 }
 
 template <typename T>
-mys::forward_list<T>::forward_list(std::initializer_list<T> init) :
-    forward_list() {
-    for (const auto &val : init) {
-        push_back(val);
-    }
-}
-
-template <typename T>
-mys::forward_list<T>::forward_list(const forward_list &other) noexcept {
-    if (!other.length) {
-        head = nullptr;
-        tail = nullptr;
-        length = 0;
-        return;
-    }
-    head = new Node(other.head->val);
-    tail = head;
-    length = 1;
-    for (auto it = ++other.begin(); it != other.end(); it++) {
-        push_back(*it);
-    }
-}
-
-template <typename T>
-mys::forward_list<T>::forward_list(forward_list &&other) noexcept {
-    head = other.head;
-    tail = other.tail;
-    length = other.length;
-    other.head = nullptr;
-    other.tail = nullptr;
-    other.length = 0;
-}
-
-template <typename T>
-mys::forward_list<T>::~forward_list() {
-    clear();
-}
-
-template <typename T>
-T &mys::forward_list<T>::front() {
-    if (!length) {
-        throw std::out_of_range("Head not exist");
-    }
-    return head->val;
-}
-
-template <typename T>
-const T &mys::forward_list<T>::front() const {
-    if (!length) {
-        throw std::out_of_range("Head not exist");
-    }
-    return head->val;
-}
-
-template <typename T>
-T &mys::forward_list<T>::back() {
-    if (!length) {
-        throw std::out_of_range("Tail not exist");
-    }
-    return tail->val;
-}
-
-template <typename T>
-const T &mys::forward_list<T>::back() const {
-    if (!length) {
-        throw std::out_of_range("Tail not exist");
-    }
-    return tail->val;
-}
-
-template <typename T>
-T &mys::forward_list<T>::at(size_t index) {
-    if (index >= length) {
-        throw std::out_of_range("At index out of range");
-    }
-    Node *current = head;
-    for (size_t i = 0; i < index; i++)
-        current = current->next;
-    return current->val;
-}
-
-template <typename T>
-const T &mys::forward_list<T>::at(size_t index) const {
-    if (index >= length) {
-        throw std::out_of_range("At index out of range");
-    }
-    const Node *current = head;
-    for (size_t i = 0; i < index; i++)
-        current = current->next;
-    return current->val;
-}
-
-// operator[] without bound checking
-template <typename T>
-T &mys::forward_list<T>::operator[](size_t index) {
-    Node *cur = head;
-    for (size_t i = 0; i < index; i++) {
-        cur = cur->next;
-    }
-    return cur->val;
-}
-
-template <typename T>
-const T &mys::forward_list<T>::operator[](size_t index) const {
-    const Node *cur = head;
-    for (size_t i = 0; i < index; i++) {
-        cur = cur->next;
-    }
-    return cur->val;
-}
-
-template <typename T>
-mys::forward_list<T> &mys::forward_list<T>::operator=(const forward_list &other) {
-    if (this != &other) {
-        forward_list temp(other);
-        std::swap(head, temp.head);
-        std::swap(tail, temp.tail);
-        std::swap(length, temp.length);
-    }
-    return *this;
-}
-
-template <typename T>
-mys::forward_list<T> &mys::forward_list<T>::operator=(forward_list &&other) noexcept {
-    if (this != &other) {
-        clear();
-        head = other.head;
-        tail = other.tail;
-        length = other.length;
-        other.head = nullptr;
-        other.tail = nullptr;
-        other.length = 0;
-    }
-    return *this;
-}
-
-template <typename T>
-typename mys::forward_list<T>::iterator mys::forward_list<T>::find(const T &value) {
+typename forward_list<T>::iterator forward_list<T>::find(const T &value) {
     for (iterator it = begin(); it != end(); it++) {
         if (*it == value)
             return it;
@@ -398,7 +292,7 @@ typename mys::forward_list<T>::iterator mys::forward_list<T>::find(const T &valu
 }
 
 template <typename T>
-typename mys::forward_list<T>::const_iterator mys::forward_list<T>::find(const T &value) const {
+typename forward_list<T>::const_iterator forward_list<T>::find(const T &value) const {
     for (const_iterator it = begin(); it != end(); it++) {
         if (*it == value)
             return it;
@@ -407,7 +301,7 @@ typename mys::forward_list<T>::const_iterator mys::forward_list<T>::find(const T
 }
 
 template <typename T>
-bool mys::forward_list<T>::contains(const T &value) const {
+bool forward_list<T>::contains(const T &value) const {
     for (const_iterator it = begin(); it != end(); it++) {
         if (*it == value)
             return true;
@@ -415,9 +309,38 @@ bool mys::forward_list<T>::contains(const T &value) const {
     return false;
 }
 
-// 头插法 o(1)空间  递归（尾插法） o(n)空间
 template <typename T>
-void mys::forward_list<T>::reverse() noexcept {
+typename forward_list<T>::iterator forward_list<T>::begin() noexcept {
+    return iterator(head);
+}
+
+template <typename T>
+typename forward_list<T>::iterator forward_list<T>::end() noexcept {
+    return iterator(nullptr);
+}
+
+template <typename T>
+typename forward_list<T>::const_iterator forward_list<T>::begin() const noexcept {
+    return const_iterator(head);
+}
+
+template <typename T>
+typename forward_list<T>::const_iterator forward_list<T>::end() const noexcept {
+    return const_iterator(nullptr);
+}
+
+template <typename T>
+typename forward_list<T>::const_iterator forward_list<T>::cbegin() const noexcept {
+    return const_iterator(head);
+}
+
+template <typename T>
+typename forward_list<T>::const_iterator forward_list<T>::cend() const noexcept {
+    return const_iterator(nullptr);
+}
+
+template <typename T>
+void forward_list<T>::reverse() noexcept {
     if (length <= 1)
         return;
     Node *pre = nullptr, *cur = head;
@@ -432,7 +355,7 @@ void mys::forward_list<T>::reverse() noexcept {
 }
 
 template <typename T>
-void mys::forward_list<T>::remove_value(const T &value) {
+void forward_list<T>::remove_value(const T &value) {
     while (head != nullptr && head->val == value) {
         Node *toDelete = head;
         head = head->next;
@@ -457,3 +380,76 @@ void mys::forward_list<T>::remove_value(const T &value) {
         }
     }
 }
+
+template <typename T>
+T &forward_list<T>::iterator::operator*() const {
+    return current->val;
+}
+
+template <typename T>
+T *forward_list<T>::iterator::operator->() {
+    return &(current->val);
+}
+
+template <typename T>
+typename forward_list<T>::iterator &forward_list<T>::iterator::operator++() {
+    if (current)
+        current = current->next;
+    return *this;
+}
+
+template <typename T>
+typename forward_list<T>::iterator forward_list<T>::iterator::operator++(int) {
+    iterator temp = *this;
+    if (current)
+        current = current->next;
+    return temp;
+}
+
+template <typename T>
+bool forward_list<T>::iterator::operator==(const iterator &other) const {
+    return current == other.current;
+}
+
+template <typename T>
+bool forward_list<T>::iterator::operator!=(const iterator &other) const {
+    return !(*this == other);
+}
+
+template <typename T>
+const T &forward_list<T>::const_iterator::operator*() const {
+    return current->val;
+}
+
+template <typename T>
+const T *forward_list<T>::const_iterator::operator->() const {
+    return &(current->val);
+}
+
+template <typename T>
+typename forward_list<T>::const_iterator &forward_list<T>::const_iterator::operator++() {
+    if (current) {
+        current = current->next;
+    }
+    return *this;
+}
+
+template <typename T>
+typename forward_list<T>::const_iterator forward_list<T>::const_iterator::operator++(int) {
+    const_iterator temp = *this;
+    if (current)
+        current = current->next;
+    return temp;
+}
+
+template <typename T>
+bool forward_list<T>::const_iterator::operator==(const const_iterator &other) const {
+    return current == other.current;
+}
+
+template <typename T>
+bool forward_list<T>::const_iterator::operator!=(const const_iterator &other) const {
+    return !(*this == other);
+}
+
+} // namespace mys

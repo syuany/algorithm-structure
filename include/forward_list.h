@@ -1,6 +1,4 @@
-/*
-    Singly-Linked List
-*/
+#pragma once
 
 #include <initializer_list>
 #include <string>
@@ -20,9 +18,9 @@ private:
     };
 
     // 不带头节点（哨兵）
-    Node *head;
-    Node *tail;
-    size_t length;
+    Node *head = nullptr;
+    Node *tail = nullptr;
+    size_t length = 0;
 
 public:
     // 迭代器相关类型定义
@@ -80,10 +78,10 @@ public:
     };
 
     // 构造函数
-    forward_list();
-    forward_list(std::initializer_list<T> init);      // 允许 ={1，2，3}
-    forward_list(const forward_list &other) noexcept; // 拷贝构造
-    forward_list(forward_list &&other) noexcept;      // 移动构造
+    forward_list() = default;
+    forward_list(std::initializer_list<T> init); // 允许 ={1，2，3}
+    forward_list(const forward_list &other);     // 拷贝构造
+    forward_list(forward_list &&other) noexcept; // 移动构造
 
     // 析构函数
     ~forward_list();
