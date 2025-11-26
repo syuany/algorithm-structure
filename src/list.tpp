@@ -5,8 +5,53 @@
 namespace mys {
 
 template <Listable T, typename Allocator>
-list<T, Allocator>::list(std::initializer_list<T> init) :
-    list() {
+template <bool IsConst>
+list<T, Allocator>::template ListIterator<IsConst>::ListIterator(Node *node) : current_(node) {}
+
+template <Listable T, typename Allocator>
+template <bool IsConst>
+list<T, Allocator>::ListIterator<IsConst>::reference list<T, Allocator>::ListIterator<IsConst>::operator*() const {
+    return current_->val;
+}
+
+template <Listable T, typename Allocator>
+template <bool IsConst>
+list<T, Allocator>::ListIterator<IsConst>::pointer list<T, Allocator>::ListIterator<IsConst>::operator->() const {
+    return current_->val;
+}
+
+template <Listable T, typename Allocator>
+template <bool IsConst>
+list<T, Allocator>::ListIterator<IsConst> &list<T, Allocator>::ListIterator<IsConst>::operator++() {
+    if (current_) current_ = current_->next;
+    return *this;
+}
+
+template <Listable T, typename Allocator>
+template <bool IsConst>
+list<T, Allocator>::ListIterator<IsConst> &list<T, Allocator>::ListIterator<IsConst>::operator++(int) {
+    iterator temp = *this;
+    if (current_) current_ = current_->next;
+    return temp;
+}
+
+template <Listable T, typename Allocator>
+template <bool IsConst>
+list<T, Allocator>::ListIterator<IsConst> &list<T, Allocator>::ListIterator<IsConst>::operator--() {
+    if (current_) current_ = current_->prev;
+    return *this;
+}
+
+template <Listable T, typename Allocator>
+template <bool IsConst>
+list<T, Allocator>::ListIterator<IsConst> &list<T, Allocator>::ListIterator<IsConst>::operator--(int) {
+    iterator temp = *this;
+    if (current_) current_ = current_->prev;
+    return temp;
+}
+
+template <Listable T, typename Allocator>
+list<T, Allocator>::list(std::initializer_list<T> init) : list() {
     for (auto &x : init) {
         push_back(x);
     }
@@ -122,6 +167,48 @@ void list<T, Allocator>::pop_front() {
     head = head->next;
     destroy_node(p);
     length--;
+}
+
+template <Listable T, typename Allocator>
+template <typename Self>
+auto list<T, Allocator>::begin(this Self &&self) noexcept {
+    using BaseSelf = std::remove_reference_t<Self>;
+    using IterType = std::conditional_t<std::is_const_v<BaseSelf>, const_iterator, iterator>;
+    return IterType(self.head);
+}
+
+template <Listable T, typename Allocator>
+list<T, Allocator>::const_iterator list<T, Allocator>::cbegin() const noexcept {
+    return const_iterator(head);
+}
+
+template <Listable T, typename Allocator>
+template <typename Self>
+auto list<T, Allocator>::end(this Self &&self) noexcept {
+    using BaseSelf = std::remove_reference_t<Self>;
+    using IterType = std::conditional_t<std::is_const_v<BaseSelf>, const_iterator, iterator>;
+    return IterType(nullptr);
+}
+
+template <Listable T, typename Allocator>
+list<T, Allocator>::const_iterator list<T, Allocator>::cend() const noexcept {
+    return const_iterator(nullptr);
+}
+
+template <Listable T, typename Allocator>
+template <typename Self>
+auto list<T, Allocator>::rbegin(this Self &&self) noexcept {
+    using BaseSelf = std::remove_reference_t<Self>;
+    using IterType = std::conditional_t<std::is_const_v<BaseSelf>, const_reverse_iterator, reverse_iterator>;
+    return IterType(tail);
+}
+
+template <Listable T, typename Allocator>
+template <typename Self>
+auto list<T, Allocator>::rend(this Self &&self) noexcept {
+    using BaseSelf = std::remove_reference_t<Self>;
+    using IterType = std::conditional_t<std::is_const_v<BaseSelf>, const_reverse_iterator, reverse_iterator>;
+    return IterType(nullptr);
 }
 
 template <Listable T, typename Allocator, typename... Args>

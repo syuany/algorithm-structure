@@ -27,9 +27,7 @@ private:
 
         // Perfect Forwarding
         template <typename... Args>
-        Node(Args &&...args) :
-            val(std::forward<Args>(args)...) {
-        }
+        Node(Args &&...args) : val(std::forward<Args>(args)...) {}
     };
 
     using NodeAlloc = typename std::allocator_traits<Allocator>::template rebind_alloc<Node>;
@@ -141,29 +139,29 @@ public:
     // 6. Iterator Interface
     // ===========================================================
 
-    iterator begin() noexcept;
-    const_iterator begin() const noexcept;
+    template <typename Self>
+    auto begin(this Self &&self) noexcept;
     const_iterator cbegin() const noexcept;
 
-    iterator end() noexcept;
-    const_iterator end() const noexcept;
+    template <typename Self>
+    auto end(this Self &&self) noexcept;
     const_iterator cend() const noexcept;
 
     // Reverse iterators (std::reverse_iterator adapter)
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    reverse_iterator rbegin() noexcept;
-    const_reverse_iterator crbegin() const noexcept;
-    reverse_iterator rend() noexcept;
-    const_reverse_iterator crend() const noexcept;
+    template <typename Self>
+    auto rbegin(this Self &&self) noexcept;
+    template <typename Self>
+    auto rend(this Self &&self) noexcept;
 
     // ===========================================================
     // 7. C++20 Comparison Operations (Spaceship Operator)
     // ===========================================================
 
     // Auto-generated == and !=
-    bool operator==(const list &other) const;
+    bool operator==(const list &other) const = default;
 
     // C++20: Implement three-way comparison
     // Requires T to also support <=>, otherwise needs to fall back to regular comparison

@@ -5,8 +5,7 @@
 namespace mys {
 
 template <typename T>
-forward_list<T>::forward_list(std::initializer_list<T> init) :
-    forward_list() {
+forward_list<T>::forward_list(std::initializer_list<T> init) : forward_list() {
     for (const auto &val : init) {
         push_back(val);
     }
@@ -153,8 +152,7 @@ const T &forward_list<T>::operator[](size_t index) const {
 template <typename T>
 void forward_list<T>::push_front(const T &value) {
     Node *p = new Node(value);
-    if (!length)
-        tail = p;
+    if (!length) tail = p;
     p->next = head;
     head = p;
     length++;
@@ -214,16 +212,14 @@ void forward_list<T>::pop_back() {
 
 template <typename T>
 typename forward_list<T>::iterator forward_list<T>::insert(size_t index, const T &value) {
-    if (index > size())
-        throw std::out_of_range("Insert index out of range");
+    if (index > size()) throw std::out_of_range("Insert index out of range");
 
     Node *newnode = new Node(value);
 
     if (index == 0) {
         newnode->next = head;
         head = newnode;
-        if (tail == nullptr)
-            tail = newnode;
+        if (tail == nullptr) tail = newnode;
     } else {
         Node *current = head;
 
@@ -232,8 +228,7 @@ typename forward_list<T>::iterator forward_list<T>::insert(size_t index, const T
         }
         newnode->next = current->next;
         current->next = newnode;
-        if (newnode->next == nullptr)
-            tail = newnode;
+        if (newnode->next == nullptr) tail = newnode;
     }
 
     length++;
@@ -242,8 +237,7 @@ typename forward_list<T>::iterator forward_list<T>::insert(size_t index, const T
 
 template <typename T>
 typename forward_list<T>::iterator forward_list<T>::erase(size_t index) {
-    if (index >= size())
-        throw std::out_of_range("Erase index out of range");
+    if (index >= size()) throw std::out_of_range("Erase index out of range");
 
     if (index == 0) {
         Node *toDelete = head;
@@ -285,8 +279,7 @@ void forward_list<T>::clear() noexcept {
 template <typename T>
 typename forward_list<T>::iterator forward_list<T>::find(const T &value) {
     for (iterator it = begin(); it != end(); it++) {
-        if (*it == value)
-            return it;
+        if (*it == value) return it;
     }
     return end();
 }
@@ -294,8 +287,7 @@ typename forward_list<T>::iterator forward_list<T>::find(const T &value) {
 template <typename T>
 typename forward_list<T>::const_iterator forward_list<T>::find(const T &value) const {
     for (const_iterator it = begin(); it != end(); it++) {
-        if (*it == value)
-            return it;
+        if (*it == value) return it;
     }
     return end();
 }
@@ -303,8 +295,7 @@ typename forward_list<T>::const_iterator forward_list<T>::find(const T &value) c
 template <typename T>
 bool forward_list<T>::contains(const T &value) const {
     for (const_iterator it = begin(); it != end(); it++) {
-        if (*it == value)
-            return true;
+        if (*it == value) return true;
     }
     return false;
 }
@@ -341,8 +332,7 @@ typename forward_list<T>::const_iterator forward_list<T>::cend() const noexcept 
 
 template <typename T>
 void forward_list<T>::reverse() noexcept {
-    if (length <= 1)
-        return;
+    if (length <= 1) return;
     Node *pre = nullptr, *cur = head;
     tail = head;
     while (cur) {
@@ -371,8 +361,7 @@ void forward_list<T>::remove_value(const T &value) {
         if (cur->next->val == value) {
             Node *toDelete = cur->next;
             cur->next = toDelete->next;
-            if (toDelete == tail)
-                tail = cur;
+            if (toDelete == tail) tail = cur;
             delete toDelete;
             length--;
         } else {
@@ -393,16 +382,14 @@ T *forward_list<T>::iterator::operator->() {
 
 template <typename T>
 typename forward_list<T>::iterator &forward_list<T>::iterator::operator++() {
-    if (current)
-        current = current->next;
+    if (current) current = current->next;
     return *this;
 }
 
 template <typename T>
 typename forward_list<T>::iterator forward_list<T>::iterator::operator++(int) {
     iterator temp = *this;
-    if (current)
-        current = current->next;
+    if (current) current = current->next;
     return temp;
 }
 
@@ -437,8 +424,7 @@ typename forward_list<T>::const_iterator &forward_list<T>::const_iterator::opera
 template <typename T>
 typename forward_list<T>::const_iterator forward_list<T>::const_iterator::operator++(int) {
     const_iterator temp = *this;
-    if (current)
-        current = current->next;
+    if (current) current = current->next;
     return temp;
 }
 
