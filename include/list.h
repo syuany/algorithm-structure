@@ -110,6 +110,9 @@ public:
     // ===========================================================
 
     void clear() noexcept;
+    void swap(list &other) noexcept;
+    // void resize(size_t count);
+    // void resize(size_t count, const T &value);
 
     void push_back(const T &value);
     void push_back(T &&value);
@@ -170,8 +173,6 @@ public:
     // ===========================================================
     // 8. Other Operations
     // ===========================================================
-
-    void swap(list &other) noexcept;
 
     template <typename... Args>
     Node *create_node(Args &&...args);

@@ -76,6 +76,7 @@ void list<T, Allocator>::push_back(const T &value) {
         tail = p;
     } else {
         tail->next = p;
+        p->prev = tail;
         tail = p;
     }
     length++;
@@ -90,6 +91,7 @@ void list<T, Allocator>::push_back(T &&value) {
         tail = p;
     } else {
         tail->next = p;
+        p->prev = tail;
         tail = p;
     }
     length++;
@@ -104,6 +106,7 @@ void list<T, Allocator>::push_front(const T &value) {
         tail = p;
     } else {
         p->next = head;
+        head->prev = p;
         head = p;
     }
     length++;
@@ -118,6 +121,7 @@ void list<T, Allocator>::push_front(T &&value) {
         tail = p;
     } else {
         p->next = head;
+        head->prev = p;
         head = p;
     }
     length++;
@@ -132,6 +136,7 @@ void list<T, Allocator>::emplace_back(Args &&...args) {
         tail = p;
     } else {
         tail->next = p;
+        p->prev = tail;
         tail = p;
     }
     length++;
@@ -146,6 +151,7 @@ void list<T, Allocator>::emplace_front(Args &&...args) {
         tail = p;
     } else {
         p->next = head;
+        head->prev = p;
         head = p;
     }
     length++;
@@ -156,6 +162,7 @@ void list<T, Allocator>::pop_back() {
     if (!tail) return;
     Node *p = tail;
     tail = tail->prev;
+    tail->next = nullptr;
     destroy_node(p);
     length--;
 }
@@ -165,8 +172,99 @@ void list<T, Allocator>::pop_front() {
     if (!head) return;
     Node *p = head;
     head = head->next;
+    head->prev = nullptr;
     destroy_node(p);
     length--;
+}
+
+template <Listable T, typename Allocator>
+list<T, Allocator>::iterator list<T, Allocator>::insert(const_iterator pos, const T &value) {
+    Node *newnode = create_node(value);
+    if (pos == begin()) {
+        emplace_front(value)
+    } else if (pos == end()) {
+        emplace_back(value);
+    } else {
+        Node *cur = pos.current_;
+        Node *pre = pos.current_->prev;
+        cur->prev = newnode;
+        newnode->next = cur;
+        pre->next = newnode;
+        newnode->prev = pre;
+    }
+    length++;
+    return iterator(newnode);
+}
+
+template <Listable T, typename Allocator>
+list<T, Allocator>::iterator list<T, Allocator>::insert(const_iterator pos, T &&value) {
+    Node *newnode = create_node(value);
+    if (pos == begin()) {
+        emplace_front(value)
+    } else if (pos == end()) {
+        emplace_back(value);
+    } else {
+        Node *cur = pos.current_;
+        Node *pre = pos.current_->prev;
+        cur->prev = newnode;
+        newnode->next = cur;
+        pre->next = newnode;
+        newnode->prev = pre;
+    }
+    length++;
+    return iterator(newnode);
+}
+
+template <Listable T, typename Allocator>
+template <typename... Args>
+list<T, Allocator>::iterator list<T, Allocator>::emplace(const_iterator pos, Args &&...args) {
+    Node *newnode = create_node(args);
+    if (pos == begin()) {
+        emplace_front(value)
+    } else if (pos == end()) {
+        emplace_back(value);
+    } else {
+        Node *cur = pos.current_;
+        Node *pre = pos.current_->prev;
+        cur->prev = newnode;
+        newnode->next = cur;
+        pre->next = newnode;
+        newnode->prev = pre;
+    }
+    length++;
+    return iterator(newnode);
+}
+
+template <Listable T, typename Allocator>
+list<T, Allocator>::iterator list<T, Allocator>::erase(const_iterator pos) {
+    if (pos.current_ == nullptr) throw std::out_of_range("Erase out of range");
+    Node *to_delete = pos.current_;
+    Node *prev_node = to_delete->prev;
+    Node *next_node = to_delete->next;
+    if (prev_node) {
+        prev_node->next = next_node;
+    } else {
+        head = next_node;
+    }
+    if (!next_node) {
+        tail = prev_node;
+    }
+    iterator it();
+    destroy_node(to_delete);
+    length--;
+    return it;
+}
+
+template <Listable T, typename Allocator>
+list<T, Allocator>::iterator list<T, Allocator>::erase(const_iterator first, const_iterator last) {
+    if (first.current_ == nullptr) throw std::out_of_range("Erase out of range");
+    for (; first != last; first++) {
+        Node *cur = first.current_;
+        Node *pre = cur->prev;
+        if (pre) pre->next = nullptr;
+        destroy_node(cur);
+        length--;
+    }
 }
 
 template <Listable T, typename Allocator>
