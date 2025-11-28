@@ -44,7 +44,8 @@ public:
     template <bool IsConst>
     class ListIterator {
     private:
-        Node *current_ = nullptr;
+        using NodePtr = std::conditional_t<IsConst, const Node *, Node *>;
+        NodePtr *current_ = nullptr;
         friend class list;
 
     public:
@@ -56,7 +57,7 @@ public:
         using reference = std::conditional_t<IsConst, const T *, T *>;
 
         ListIterator() = default;
-        explicit ListIterator(Node *node);
+        explicit ListIterator(NodePtr *node);
 
         reference operator*() const;
         pointer operator->() const;
