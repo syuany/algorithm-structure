@@ -7,7 +7,6 @@
 #include <iterator>         // for std::bidirectional_iterator_tag
 #include <memory>           // for std::allocator (optional, advanced challenge)
 #include <utility>          // for std::move, std::forward
-// Need to be compatible with std::ranges
 
 namespace mys {
 
@@ -45,28 +44,69 @@ public:
     class ListIterator {
     private:
         using NodePtr = std::conditional_t<IsConst, const Node *, Node *>;
-        NodePtr *current_ = nullptr;
+        NodePtr current_ = nullptr;
+        const list *list_ = nullptr;
+
         friend class list;
+        friend class ListIterator<!IsConst>;
 
     public:
         // Necessary type definitions so STL algorithms can recognize this iterator
         using iterator_category = std::bidirectional_iterator_tag;
+        using iterator_concept = std::bidirectional_iterator_tag;
         using difference_type = std::ptrdiff_t;
         using value_type = T;
         using pointer = std::conditional_t<IsConst, const T *, T *>;
-        using reference = std::conditional_t<IsConst, const T *, T *>;
+        using reference = std::conditional_t<IsConst, const T &, T &>;
 
         ListIterator() = default;
-        explicit ListIterator(NodePtr *node);
+        explicit ListIterator(NodePtr node, const list *l = nullptr) : current_(node), list_(l){};
+        ListIterator(const ListIterator &) = default;
 
-        reference operator*() const;
-        pointer operator->() const;
+        // 允许从 iterator (IsConst=false) 隐式转换为 const_iterator (IsConst=true)
+        // 使用 requires IsConst 确保这个构造函数只在当前是 const_iterator 时存在，
+        // 避免干扰 iterator 自身的默认拷贝构造函数。
+        ListIterator(const ListIterator<false> &other)
+            requires IsConst
+            : current_(other.current_), list_(other.list_) {}
 
-        ListIterator &operator++();
-        ListIterator &operator++(int);
-        ListIterator &operator--();
-        ListIterator &operator--(int);
-        bool operator==(const ListIterator &other) const = default;
+        reference operator*() const { return current_->val; }
+
+        pointer operator->() const { return &(current_->val); }
+
+        ListIterator &operator++() {
+            if (current_) current_ = current_->next;
+            return *this;
+        }
+
+        ListIterator operator++(int) {
+            ListIterator temp = *this;
+            if (current_) current_ = current_->next;
+            return temp;
+        }
+
+        ListIterator &operator--() {
+            if (current_) {
+                current_ = current_->prev;
+            } else if (list_) {
+                current_ = list_->tail;
+            }
+            return *this;
+        }
+
+        ListIterator operator--(int) {
+            ListIterator temp = *this;
+            --(*this);
+            return temp;
+        }
+
+        // bool operator==(const ListIterator &other) const = default;
+
+        // 使用 hidden friend 替换原本的 default member operator==
+        // 这能完美解决 C++20 的 ambiguity 问题
+        friend bool operator==(const ListIterator &lhs, const ListIterator &rhs) {
+            return lhs.current_ == rhs.current_;
+        }
     };
 
     using iterator = ListIterator<false>;
@@ -157,19 +197,19 @@ public:
 
     template <typename Self>
     auto rbegin(this Self &&self) noexcept;
+    const_reverse_iterator crbegin() const noexcept;
     template <typename Self>
     auto rend(this Self &&self) noexcept;
+    const_reverse_iterator crend() const noexcept;
 
     // ===========================================================
     // 7. C++20 Comparison Operations (Spaceship Operator)
     // ===========================================================
 
-    // Auto-generated == and !=
-    bool operator==(const list &other) const = default;
-
     // C++20: Implement three-way comparison
     // Requires T to also support <=>, otherwise needs to fall back to regular comparison
     std::strong_ordering operator<=>(const list &other) const;
+    bool operator==(const list &other) const;
 
     // ===========================================================
     // 8. Other Operations
