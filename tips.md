@@ -263,24 +263,49 @@ nums[m]<t?l:r=m       wrong   => (nums[m]<t) ? l : (r=m)
 
 ### binary search
 
-\#include\<algorithm>
-binary_search(begin, end, target): 检查元素是否存在 -> bool
-lower_bound(begin, end, target): (first >=) -> iterator
-upper_bound(begin, end, target): (first > ) -> iterator
-equal_range(begin, end, target): [first, second) -> part<iterator, iterator>
+```cpp
+#include<algorithm>
+std::binary_search(begin, end, target): 检查元素是否存在 -> bool
+std::lower_bound(begin, end, target): (first >=) -> iterator
+std::upper_bound(begin, end, target): (first > ) -> iterator
+std::equal_range(begin, end, target): [first, second) -> part<iterator, iterator>
 
-ranges::lower_bound(range, tar) -> iterator
-...
-range: std::vector、std::array 等符合 range 概念的对象
+std::upper_bound(begin, end, q, [](int val, auto& item){return val < item[0]; })
+std::upper_bound(begin, end, q, [](auto& item, int val){return val < item[0]; })
+std::upper_bound(begin, end, q, [](int x, int y){return x < y; })
 
-### other
+// range: std::vector、std::array 等符合 range 概念的对象
+std::ranges::lower_bound(range, tar) -> iterator
+```
 
-partial_sum(begin, end, tar.begin): prefix sum
-upper_bound(begin, end, q, [](int val, auto& item){return val < item[0]; })    // ?
-upper_bound(begin, end, q, [](auto& item, int val){return val < item[0]; })    // ?
-upper_bound(begin, end, q, [](int x, int y){return x < y; })                   // ?
+### prefix sum
+
+```cpp
+std::partial_sum(begin, end, tar.begin);
+```
+
+### increasing sequence
+
+```cpp
+#include<numeric>
+std::iota(begin, end, start);   // C++11
+
+int a[5];
+std::iota(std::begin(a), std::end(a), start);
+
+// customize step size
+#include<algorithm>
+int start=0;
+std::generate(begin, end, [&start](){ int res=start;start+=2;return res;})
+```
 
 ## container
+
+### all
+
+所有容器都有：
+
+- TODO
 
 ### vector
 
@@ -291,13 +316,21 @@ insert()
     iterator insert(iterator pos, InputIt first, InputIt last);
     iterator insert(iterator pos, std::initializer_list\<T> ilist);
 
-## assert
+### unordered_set
 
-assert 是一个用于调试的宏（macro），主要作用是在程序运行时检查某个条件是否为真。
-如果条件为假（false），assert 会触发程序终止，并输出详细的错误信息（如文件名、行号、检查的表达式）
-assert(a == b && "a cannot equal to b")
+insert()
 
-## customize hash function to unordered_set
+```cpp
+// A pair consisting of an iterator to the inserted element 
+// (or to the element that prevented the insertion) 
+// and a bool value set to true if and only if the insertion took place.
+std::pair<iterator,bool> insert( const value_type& value );
+std::pair<iterator,bool> insert( value_type&& value );
+// for instance
+if(!s.insert(nums[i]).second) return true;
+```
+
+#### customize hash function to unordered_set
 
 ```cpp
 struct TupleHash {
@@ -317,6 +350,21 @@ struct TupleHash {
 };
 unordered_set<tuple<int, int, int>, TupleHash> packet_s;
 ```
+
+#### unordered_map
+
+```cpp
+// check without insert
+m.contains()        // concisely (C++20)
+m.find()!=m.end()
+m.count()
+```
+
+## assert
+
+assert 是一个用于调试的宏（macro），主要作用是在程序运行时检查某个条件是否为真。
+如果条件为假（false），assert 会触发程序终止，并输出详细的错误信息（如文件名、行号、检查的表达式）
+assert(a == b && "a cannot equal to b")
 
 ## type convert
 
@@ -390,3 +438,60 @@ auto dfs=[&](this auto&& dfs, ...){};   // C++23
 - const 只保证运行时不变性
 - constexpr 保证编译期可求值
 - constexpr 隐含了 const 的语义
+
+## attributes
+
+- [[nodiscard]]: 用于标记函数返回值不应该被忽略 (C++17)
+
+## Smart Pointer
+
+
+
+## allocator
+
+```cpp
+std::allocator_traits<NodeAlloc>::allocate(allocator_, 1);
+std::construct_at(ptr, std::forward<Args>(args)...);
+std::allocator_traits<NodeAlloc>::destroy(allocator_, ptr);
+std::allocator_traits<NodeAlloc>::deallocate(allocator_, ptr, 1);
+```
+
+## something about (...)
+
+
+
+## Deducing this
+
+### 基本概念
+
+Deducing this 是 C++23 引入的一项新特性，允许在类的非静态成员函数中显式地指定 this 指针的类型。这使得成员函数可以根据调用对象的类型（const、volatile、ref-qualifiers 等）进行重载和选择。
+
+## explicit
+
+explicit 是 C++ 中的一个关键字，用于修饰构造函数，防止该构造函数被隐式调用或用于隐式类型转换
+
+```cpp
+Node *node = ...; // 假设有一个 Node 指针
+mys::list<int>::iterator it = node; // 隐式调用构造函数
+```
+
+这种隐式转换可能会导致代码的可读性和可维护性变差，甚至引入难以发现的错误。通过添加 explicit，可以强制要求调用者显式地构造迭代器
+
+```cpp
+Node *node = ...;
+mys::list<int>::iterator it(node); // 必须显式调用构造函数
+```
+
+## std::conditional_t
+
+### 作用
+
+std::conditional_t 是 C++ 标准库中的一个类型特性（type trait），用于根据条件选择类型。它类似于三元运算符（?:），但用于类型选择。
+
+### 和 std::conditional 的区别
+
+std::conditional 是一个模板结构体，包含一个成员类型 type，而 std::conditional_t 是其简化形式，直接返回所选类型，省略了访问 type 成员的步骤。
+
+```cpp
+std::conditional_t<Condition, TypeIfTrue, TypeIfFalse>
+```
